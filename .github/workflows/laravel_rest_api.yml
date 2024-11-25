@@ -13,14 +13,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Установка PHP и зависимостей
+    # Установка кода из репозитория
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        node-version: '20'
 
+    # Установка PHP и зависимостей
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.2  # Задай версию PHP, подходящую твоему проекту
+        php-version: 8.2
         extensions: mbstring, bcmath
         ini-values: post_max_size=256M, upload_max_filesize=256M
         coverage: none
