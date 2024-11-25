@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - '*.x'
-      - main
   pull_request:
   schedule:
     - cron: '0 0 * * *'
@@ -35,11 +34,6 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
-      - name: Setup database
-        run: |
-          sudo systemctl start mysql
-          mysql -e CREATE DATABASE testing
-
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
@@ -48,9 +42,6 @@ jobs:
 
       - name: Generate app key
         run: php artisan key:generate
-
-      - name: Run migrations
-        run: php artisan migrate --env=testing
 
       - name: Execute tests
         run: vendor/bin/phpunit
