@@ -1,0 +1,56 @@
+name: Laravel CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Установка PHP и зависимостей
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2  # Задай версию PHP, подходящую твоему проекту
+        extensions: mbstring, bcmath
+        ini-values: post_max_size=256M, upload_max_filesize=256M
+        coverage: none
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Generate application key
+      run: php artisan key:generate
+
+    # Настройка базы данных
+    - name: Set up database
+      run: sudo systemctl start mysql
+
+    - name: Create database
+      run: |
+        mysql -e 'CREATE DATABASE testing;'
+
+    # Настройка .env файла для тестов
+    - name: Set environment variables
+      run: cp .env.example .env
+      env:
+        DB_CONNECTION: mysql
+        DB_DATABASE: testing
+        DB_USERNAME: root
+        DB_PASSWORD: ""
+
+    # Выполнение миграций и тестов
+    - name: Run migrations
+      run: php artisan migrate
+
+    - name: Run tests
+      run: php artisan test
