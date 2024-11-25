@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.2]
+        php: [8.2, 8.3]
 
     name: PHP ${{ matrix.php }}
 
@@ -38,7 +38,7 @@ jobs:
       - name: Setup database
         run: |
           sudo systemctl start mysql
-          mysql -e 'CREATE DATABASE testing;
+          mysql -e 'CREATE DATABASE testing'
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
