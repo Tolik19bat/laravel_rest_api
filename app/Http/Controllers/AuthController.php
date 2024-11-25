@@ -19,6 +19,7 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request)
     {
         if (!Auth::attempt($request->only(['email', 'password']))) {
+            
             return response()->json([
                 'message' => 'Неправильный емейл или пароль',
             ], 401);
