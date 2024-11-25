@@ -34,18 +34,19 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request)
-    {  
-        $user = Auth::user();  
-    
-        if (!$user) {  
-            return response()->json(['message' => 'User not authenticated'], 401);  
-        }  
-    
-        try {  
-            $user->currentAccessToken()->delete();  
-            return response()->json(['message' => 'Token removed']);  
-        } catch (\Exception $e) {  
-            return response()->json(['message' => 'Error removing token: ' . $e->getMessage()], 500);  
-        }  
-    } 
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
+        try {
+            /** @var \App\Models\User $user */
+            $user->currentAccessToken()->delete();
+            return response()->json(['message' => 'Token removed']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error removing token: ' . $e->getMessage()], 500);
+        }
+    }
 }
