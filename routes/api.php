@@ -1,22 +1,33 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CarController;
-use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TokenController;
+use App\Http\Controllers\CarController;
 use Illuminate\Http\Request;
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Группа маршрутов для аутентификации
+Route::middleware('guest')->group(function () {
+    Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 });
 
-Route::post('register',[AuthController::class, 'register']);
-Route::post('login',[AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->get('logout',[AuthController::class, 'logout']);
+// Группа защищенных маршрутов
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    })->name('auth.user');
 
-Route::post('/tokens/create', [TokenController::class, 'create']);
+    Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
+    Route::post('/tokens/create', [TokenController::class, 'create'])->name('tokens.create');
 
-Route::middleware('auth:sanctum')->apiResource('cars', CarController::class); 
+    // API-ресурс для управления машинами
+    Route::apiResource('cars', CarController::class)->names([
+        'index'   => 'cars.index',
+        'store'   => 'cars.store',
+        'show'    => 'cars.show',
+        'update'  => 'cars.update',
+        'destroy' => 'cars.destroy',
+    ]);
+});
